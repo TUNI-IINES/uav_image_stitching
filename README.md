@@ -27,7 +27,7 @@ The program is written with Visual Studio 2019 and OpenCV 4.5.5.
 - In tab **Configuration Properties -> VC++ Directories**, at section **General -> Include Directories**, add *\<Your folder>\opencv\build\install\include*. At section **Library directory**, add *\<Your folder>\opencv\build\install\x64\vc16\lib*.
 - In tab **Linker ->Input**, at section **Additional Dependencies**, include all *.lib* files in OpenCV directories *opencv\build\install\x64\vc16\lib*. It's usually that you can have only one `opencv_world4.x.x.lib` is enough.
 
-## Code flow
+<!-- ## Code flow
 
 In `main.cpp`
 
@@ -36,7 +36,7 @@ In `main.cpp`
 - At line 30, please specify the number of seconds and the fps of it. So the total frames after stitching together will be `frames = seconds x fps`.
 - Also at line 30, please specify the changes in x and y coordinates after each frame to mimic multiple moving drones. *You can read more about the ImageSimulator class and its functions in `ImageSimulator.h` and `ImageSimulator.cpp`*.
 
-Main flow: At the moment, after specify all above details, the code should generate an output video showing stitched images from 3 camera views and 30 seconds.
+Main flow: At the moment, after specify all above details, the code should generate an output video showing stitched images from 3 camera views and 30 seconds. -->
 
 ## Improvements
 

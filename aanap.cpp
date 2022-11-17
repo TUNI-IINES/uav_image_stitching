@@ -6,10 +6,10 @@
 #include "opencv2/opencv_modules.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 #include "math.h"
-#include "homography_warp.h"
+#include "homography_warp.cpp"
 #include "aanap.h"
-#include "compute_weight.h"
-#include "samplePoint.h"
+#include "compute_weight.cpp"
+#include "samplePoint.cpp"
 
 
 

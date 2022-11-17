@@ -1,17 +1,21 @@
 #include <vector>
-#include "Circle.h"
+#include "Circle.cpp"
 
 class ImageSimulator
 {
 public:
-	ImageSimulator(cv::Mat canvas, std::vector<Circle*> circles);
+	ImageSimulator(cv::Mat canvas);
 	~ImageSimulator();
 
-	void load_frames(int seconds = 30, int fps = 1, int move_x = 10, int move_y = 10, float radius = -1.0f);
+	void init_frames(int fps = 1); 	
+	void stitch_frames(std::vector<Circle*> circles, int ms_cnt = 0); 	
+	void close_simulator(void); 	
 
 private:
 	cv::Mat canvas_;
-	std::vector<Circle*> circles_;
 	std::vector<cv::Mat> frames_;
+
+	cv::Size wannabe_size_;
+	cv::VideoWriter outputVideo_;
 };
 
