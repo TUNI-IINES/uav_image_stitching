@@ -2,8 +2,6 @@
 
 Created by: Duc An Ton's
 
-Further modified by Made Widhi Surya Atman to simulate the drone movement in the stitched images.
-
 This is an implementation of the approach in [1]
 that was originally in Matlab into C++.
 
