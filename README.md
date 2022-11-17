@@ -1,6 +1,11 @@
 # UAV_stitching
 
-This is An Ton's implementation to transfer all code to C++.
+Created by: Duc An Ton's
+
+This is an implementation of the approach in [1]
+that was originally in Matlab into C++.
+
+[1] Y. Yuan, F. Fang, and G. Zhang, “Superpixel-Based Seamless Image Stitching for UAV Images,” IEEE Transactions on Geoscience and Remote Sensing, vol. 59, no. 2, pp. 1565–1576, Feb. 2021, doi: 10.1109/TGRS.2020.2999404.
 
 ## How to use
 
@@ -36,3 +41,6 @@ Main flow: At the moment, after specify all above details, the code should gener
 ## Improvements
 
 - The current implementation for 3 camera views (performing 2 stitches) takes around 6 to 8 seconds. However, to achieve real-time implementation, GPU can be thought of.
+
+## Acknowledgment
+This project was supported by TAU Imaging Research Platform (Academy of Finland, PROFI6 - project no. 336357)
