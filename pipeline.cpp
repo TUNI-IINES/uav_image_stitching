@@ -817,6 +817,8 @@ void image_aligment(vector<Mat> &src, vector<Mat> &seamed_masks, vector<Mat> &im
         sift->detect(src[i], features[i].keypoints);
         sift->compute(src[i], features[i].keypoints, features[i].descriptors);
     }
+    cout << "SIFT " << std::flush;
+
 
     vector<MatchesInfo> matches_info;
     BestOf2NearestMatcher matcher(false, 0.5f);
@@ -829,6 +831,7 @@ void image_aligment(vector<Mat> &src, vector<Mat> &seamed_masks, vector<Mat> &im
     ymaps_.resize(IMG_NUM);
     Ptr<AANAPWarper> warper = new AANAPWarper();
     warper->buildMaps(src, features, matches_info, xmaps_, ymaps_, corners_);
+    cout << "AANAP " << std::flush;
 
     // Get the mask of the overlapping area
     for (int i = 0; i < IMG_NUM; ++i)
@@ -843,8 +846,9 @@ void image_aligment(vector<Mat> &src, vector<Mat> &seamed_masks, vector<Mat> &im
         remap(src[i], images_warped[i], xmaps_[i], ymaps_[i], INTER_LINEAR);
         remap(init_masks[i], final_warped_masks_[i], xmaps_[i], ymaps_[i], INTER_NEAREST, BORDER_CONSTANT);
         seamed_masks[i] = final_warped_masks_[i].clone();
-        //imshow("seamed masks", images_warped[i]);
-        //waitKey(0);
+        // Display seamed masks for debug --> WIDHI
+        // imshow("seamed masks", images_warped[i]);
+        // waitKey(0);
     }
 }
 
@@ -863,8 +867,8 @@ void image_registration(Mat &mask, int m, int n, vector<Mat> &seamed_masks, vect
 
     Mat flag;
     bitwise_and(edges[0], edges[1], flag);
-    //imshow("flag", flag);
-    //waitKey(0);
+    // imshow("flag", flag);
+    // waitKey(0);
 
     // Create intersection_list for the graph cut
     //map<int, pair<int, int>> intersection_list;
@@ -984,13 +988,17 @@ int slic_and_labels(int m, int n, int sp_size, float compactnessfactor, Mat& lab
     return sp_num;
 }
 
-Mat pipeline(vector<Mat> &src) {
+Mat pipeline(vector<Mat> &src, std::vector<double> &time_prof) {
     // Image aligment and registration
 
     vector<Mat> seamed_masks(IMG_NUM);
     vector<Mat> images_warped(IMG_NUM);
     vector<Mat> init_masks(IMG_NUM);
 
+    // Start measuring time
+    auto begin = std::chrono::high_resolution_clock::now();
+
+    cout << "alignment " << std::flush;
     image_aligment(src, seamed_masks, images_warped, init_masks);
 
     Mat mask = Mat::zeros(dst_roi_.size(), CV_8U);
@@ -1001,10 +1009,17 @@ Mat pipeline(vector<Mat> &src) {
     vector<Mat> src_YUV;
     vector<Mat>images_warped_clone;
 
+    auto end_allign = std::chrono::high_resolution_clock::now();
+
+    cout << "--> registration " << std::flush;
     image_registration(mask, m, n, seamed_masks, images_warped, src_intensity, src_YUV, images_warped_clone, intersection_list);
+
+
+    auto end_regist = std::chrono::high_resolution_clock::now();
 
     // Smoothness cost
 
+    cout << "--> SLIC and labels " << std::flush;
     Mat labels;
     int sp_num = slic_and_labels(m, n, 20, 5.0f, labels, images_warped_clone[0], mask, src_YUV, seamed_masks[0]);
 
@@ -1055,8 +1070,26 @@ Mat pipeline(vector<Mat> &src) {
     Mat labels_2;
     int sp_num_2 = slic_and_labels(m, n, 40, 7.0f, labels_2, images_warped_clone[1], mask, src_YUV, seamed_masks[1], false);
 
+    auto end_label = std::chrono::high_resolution_clock::now();
+
+    cout << "--> image blending " << std::flush;
     // Image blending
     Mat pano = image_blending_color(images_warped, seamed_masks, sp_num_2, labels_2, cutline, labelclass);
     //spdisplay(pano, cutline);
+
+    cout << "--> DONE" << endl;
+    
+    auto end = std::chrono::high_resolution_clock::now();
+
+
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_allign - begin);
+    time_prof[0] = elapsed.count() * 1e-9 ;
+    elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_regist - end_allign);
+    time_prof[1] = elapsed.count() * 1e-9 ;
+    elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end_label - end_regist);
+    time_prof[2] = elapsed.count() * 1e-9 ;
+    elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - end_label);
+    time_prof[3] = elapsed.count() * 1e-9 ;
+
     return pano;
 }

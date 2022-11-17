@@ -6,9 +6,10 @@
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ximgproc/slic.hpp>
 #include <math.h>
+#include <chrono>
 
-#include "aanap.h"
-#include "seamcut.h"
+#include "aanap.cpp"
+#include "seamcut.cpp"
 
 void meshgrid(const Range& xgv, const Range& ygv, Mat& X, Mat& Y);
 void circshift(Mat& out, const Point& delta);
@@ -32,4 +33,4 @@ void spdisplay(Mat img, Mat cutline);
 void image_aligment(vector<Mat>& src, vector<Mat>& seamed_masks, vector<Mat>& images_warped, vector<Mat>& init_masks);
 void image_registration(Mat& mask, int m, int n, vector<Mat>& seamed_masks, vector<Mat>& images_warped, vector<Mat>& src_intensity, vector<Mat>& src_YUV, vector<Mat>& images_warped_clone, map<int, pair<int, int>>& intersection_list);
 int slic_and_labels(int m, int n, int sp_size, float compactnessfactor, Mat& labels, Mat& images_warped_clone, Mat& mask, vector<Mat>& src_YUV, Mat& seamed_mask, bool pre = true);
-Mat pipeline(vector<Mat> &src);
+Mat pipeline(vector<Mat> &src, std::vector<double> &time_prof);
